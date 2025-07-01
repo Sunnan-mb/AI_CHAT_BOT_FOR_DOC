@@ -87,9 +87,6 @@ Edit the `.env` file to configure the application:
 - `UPLOAD_FOLDER`: Directory to store uploaded files (default: 'uploads/')
 - `MAX_CONTENT_LENGTH`: Maximum file size in bytes (default: 16MB)
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 

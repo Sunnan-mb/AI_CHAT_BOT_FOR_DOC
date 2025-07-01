@@ -234,8 +234,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         messageDiv.appendChild(messageContent);
         
-        // Add to the beginning of chat messages for better UX with scrolling
-        chatMessages.prepend(messageDiv);
+        // Add to the end of chat messages
+        chatMessages.appendChild(messageDiv);
         
         if (scroll) {
             scrollToBottom();
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>
         `;
-        chatMessages.prepend(typingDiv);
+        chatMessages.appendChild(typingDiv);
         scrollToBottom();
         return typingId;
     }
@@ -270,11 +270,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Scroll to bottom of chat
+    // Smooth scroll to bottom of chat
     function scrollToBottom() {
-        chatMessages.scrollTop = 0; // Since we're using prepend, we scroll to top
+        // Use smooth scrolling with a small delay to ensure DOM is updated
+        setTimeout(() => {
+            chatMessages.scrollTo({
+                top: chatMessages.scrollHeight,
+                behavior: 'smooth'
+            });
+        }, 50);
     }
 
-    // Initialize the app
+    // Auto-scroll when user is near the bottom of the chat
+    function setupAutoScroll() {
+        // Check if user is near bottom (within 200px of bottom)
+        const isNearBottom = () => {
+            return chatMessages.scrollTop + chatMessages.clientHeight + 200 >= chatMessages.scrollHeight;
+        };
+
+        // Only auto-scroll if user is near bottom
+        chatMessages.addEventListener('scroll', () => {
+            userScrolled = !isNearBottom();
+        });
+
+        // Auto-scroll when new content is added
+        const observer = new MutationObserver((mutations) => {
+            if (!userScrolled || isNearBottom()) {
+                scrollToBottom();
+            }
+        });
+
+        observer.observe(chatMessages, { childList: true, subtree: true });
+    }
+
+    let userScrolled = false; // Track if user has manually scrolled up
+
+        // Initialize the app
     init();
+    
+    // Setup auto-scroll after initialization
+    setupAutoScroll();
 });
