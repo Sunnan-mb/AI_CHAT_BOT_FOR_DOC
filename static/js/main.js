@@ -111,12 +111,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const data = await response.json();
             
             if (response.ok) {
-                // Start a new chat with the uploaded document
+                // Set current chat ID and show success message first
                 currentChatId = data.chat_id;
-                loadChat(currentChatId);
                 
-                // Show success message
-                addMessage('system', `Document "${data.filename}" has been uploaded. You can now ask questions about it.`);
+                // Clear chat messages and show our custom message
+                chatMessages.innerHTML = '';
+                addMessage('system', `📄 Document uploaded: <strong>${data.filename}</strong>\nYou can now ask questions about this document.`);
+                
+                // Then load the chat (which will show the full history including our message)
+                loadChat(currentChatId);
             } else {
                 throw new Error(data.error || 'Failed to upload file');
             }
@@ -228,8 +231,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageContent = document.createElement('div');
         messageContent.className = `message ${role === 'user' ? 'user-message' : 'ai-message'}`;
         
-        // Format the message content (preserve line breaks)
-        const formattedContent = content.replace(/\n/g, '<br>');
+        // Set innerHTML directly to allow HTML content
+        // First escape any HTML in the content to prevent XSS
+        const temp = document.createElement('div');
+        temp.textContent = content;
+        const escapedContent = temp.innerHTML;
+        
+        // Then replace newlines with <br> and allow our safe HTML
+        const formattedContent = escapedContent
+            .replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
+            
         messageContent.innerHTML = formattedContent;
         
         messageDiv.appendChild(messageContent);

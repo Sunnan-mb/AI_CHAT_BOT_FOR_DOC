@@ -18,11 +18,11 @@ class ChatManager:
         self.current_document = None
         return self.current_chat_id
 
-    def set_document(self, document_content: str) -> None:
+    def set_document(self, document_content: str, fillname: str) -> None:
         """Set the current document content for the chat."""
         self.current_document = document_content
         # Add system message about the document
-        self.add_message("system", "Document has been uploaded. You can now ask questions about it.")
+        self.add_message("system", f"Document has been uploaded {fillname}. You can now ask questions about it.")
 
     def add_message(self, role: str, content: str) -> None:
         """Add a message to the current chat."""

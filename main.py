@@ -70,7 +70,7 @@ def upload_file():
         # Start a new chat when a document is uploaded
         chat_id = chat_manager.start_new_chat()
         session['chat_id'] = chat_id
-        chat_manager.set_document(content)
+        chat_manager.set_document(content,file.filename)
         
         return jsonify({
             'message': 'File successfully uploaded',
